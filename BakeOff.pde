@@ -24,6 +24,8 @@ int startTime              = 0;      // time starts when the first click is capt
 int finishTime             = 0;      // records the time of the final click
 int hits                   = 0;      // number of successful clicks
 int misses                 = 0;      // number of missed clicks
+import processing.sound.SoundFile;
+SoundFile music;
 
 // Class used to store properties of a target
 class Target
@@ -58,6 +60,7 @@ void setup()
   noStroke();        // draw shapes without outlines
   frameRate(60);     // set frame rate
   photo = loadImage("target.png");
+  music = new SoundFile(this, "Grieg - In the Hall of the Mountain King-kLp_Hh6DKWc.mp3");
   
   // Text and font setup
   textFont(createFont("Arial", 16));    // sets the font to Arial size 16
@@ -67,6 +70,9 @@ void setup()
   colorMode(HSB);
   
   randomizeTrials();    // randomize the trial order for each participant
+  music = new SoundFile(this, "Grieg - In the Hall of the Mountain King-kLp_Hh6DKWc.mp3");
+  music.jump(80);
+  music.play();
 }
 
 // Updates UI - this method is constantly being called and drawing targets
@@ -145,6 +151,7 @@ void mouseReleased()
   {
     finishTime = millis();    // save final timestamp
     println("We're done!");
+    music.stop();
   }
   
   Target target = getTargetBounds(trials.get(trialNum));    // get the location and size for the target in the current trial
