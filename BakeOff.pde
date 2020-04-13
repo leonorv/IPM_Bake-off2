@@ -21,11 +21,14 @@ PImage photo;
 
 // Performance variables
 int startTime              = 0;      // time starts when the first click is captured
+int lastClick              = 0;       // time of the last click
 int finishTime             = 0;      // records the time of the final click
 int hits                   = 0;      // number of successful clicks
 int misses                 = 0;      // number of missed clicks
 import processing.sound.SoundFile;
 SoundFile music;
+
+int performance;
 
 // Class used to store properties of a target
 class Target
@@ -71,7 +74,7 @@ void setup()
   
   randomizeTrials();    // randomize the trial order for each participant
   music = new SoundFile(this, "Grieg - In the Hall of the Mountain King-kLp_Hh6DKWc.mp3");
-  music.jump(80);
+  music.jump(80);//music start at 80 seconds
   music.play();
 }
 
@@ -80,7 +83,8 @@ void draw()
 {
   if(hasEnded()) return; // nothing else to do; study is over
     
-  background(85 - trialNum * 85/48, 180, 255);       // set background to gradient (green to red)
+  performance = max(0,((millis()-lastClick)-563))/68;
+  background((1-performance/6.0)*85, 180, 255);       // set background to gradient (green to red)
   
 
   // Print trial count
@@ -138,7 +142,7 @@ void printResults(float timeTaken, float penalty)
   text("Total time taken: " + timeTaken + " sec", width / 2, height / 2 + 80);
   text("Average time for each target: " + nf((timeTaken)/(float)(hits+misses),0,3) + " sec", width / 2, height / 2 + 100);
   text("Average time for each target + penalty: " + nf(((timeTaken)/(float)(hits+misses) + penalty),0,3) + " sec", width / 2, height / 2 + 140);
-  
+  music.stop();
   saveFrame("results-######.png");    // saves screenshot in current folder
 }
 
@@ -151,7 +155,6 @@ void mouseReleased()
   {
     finishTime = millis();    // save final timestamp
     println("We're done!");
-    music.stop();
   }
   
   Target target = getTargetBounds(trials.get(trialNum));    // get the location and size for the target in the current trial
@@ -161,6 +164,7 @@ void mouseReleased()
   {
     System.out.println("HIT! " + trialNum + " " + (millis() - startTime));     // success - hit!
     hits++; // increases hits counter 
+    lastClick = millis();
   }
   else
   {
