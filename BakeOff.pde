@@ -83,8 +83,10 @@ void draw()
 {
   if(hasEnded()) return; // nothing else to do; study is over
     
-  performance = max(0,((millis()-lastClick)-563))/68;
-  background((1-performance/6.0)*85, 180, 255);       // set background to gradient (green to red)
+  if(millis()-lastClick < 563)
+    background(255/3, 180, 255);      //good performance
+  else
+    background(0,180,255);            //bad performance
   
 
   // Print trial count
