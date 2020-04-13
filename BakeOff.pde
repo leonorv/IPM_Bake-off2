@@ -28,7 +28,9 @@ int misses                 = 0;      // number of missed clicks
 import processing.sound.SoundFile;
 SoundFile music;
 
-int performance;
+float averageTime;
+float penalty;
+int performance;// 0 to 10 (grade)
 
 // Class used to store properties of a target
 class Target
@@ -72,6 +74,7 @@ void setup()
   rectMode(CENTER);
   colorMode(HSB);
   
+  
   randomizeTrials();    // randomize the trial order for each participant
   music = new SoundFile(this, "Grieg - In the Hall of the Mountain King-kLp_Hh6DKWc.mp3");
   music.jump(80);//music start at 80 seconds
@@ -82,12 +85,16 @@ void setup()
 void draw()
 {
   if(hasEnded()) return; // nothing else to do; study is over
-    
-  if(millis()-lastClick < 563)
-    background(255/3, 180, 255);      //good performance
-  else
-    background(0,180,255);            //bad performance
   
+  if(startTime == 0)
+    performance = 10;
+  else{
+    averageTime = (millis()-startTime)/(float)(1+hits+misses);
+    penalty = constrain(((95f-((float)hits*100f/(float)(hits+misses)))*.2f),0,100);
+    performance = max(0,min(10-int((averageTime+penalty-563)/(68/2)),10));
+  }
+  
+  background(255/3*(performance/10.0), 180, 255);      //bad performance -> red; good berformance -> green
 
   // Print trial count
   fill(0);          // set text fill color to black (white on og)
@@ -197,8 +204,7 @@ void drawTarget(int i)
   if (trials.get(trialNum) == i) 
   { 
     if (trialNum < 16*NUM_REPEATS - 1 && trials.get(trialNum + 1) == i) {
-      strokeWeight(5);
-      stroke(255);
+      text("2x",target.x+target.w/2,target.y-target.w/2);
       
     }
     image(photo, target.x, target.y, target.w, target.w);
