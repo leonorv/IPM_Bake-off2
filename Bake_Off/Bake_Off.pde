@@ -1,3 +1,4 @@
+
 // Bakeoff #2 - Seleção de Alvos e Fatores Humanos
 // IPM 2019-20, Semestre 2
 // Bake-off: durante a aula de lab da semana de 20 de Abril
@@ -36,14 +37,13 @@ int performance;// 0 to 10 (grade)
 class Target
 {
   int x, y;
-  float w, dist;
+  float w;
   
   Target(int posx, int posy, float twidth) 
   {
     x = posx;
     y = posy;
     w = twidth;
-    dist = 0;
   }
 }
 
