@@ -49,8 +49,9 @@ class Target
 // Setup window and vars - runs once
 void setup()
 {
-  size(900, 900);    // window size in px (use for debugging)
-  //fullScreen();   // USE THIS DURING THE BAKEOFF!
+  
+  //size(900, 900);    // window size in px (use for debugging)
+  fullScreen();   // USE THIS DURING THE BAKEOFF!
   
   // The text from the file is loaded into an array. 
   String[] ppi_string = loadStrings("ppi.txt");
@@ -65,7 +66,7 @@ void setup()
   noStroke();        // draw shapes without outlines
   frameRate(60);     // set frame rate
   photo = loadImage("target.png");
-  music = new SoundFile(this, "Grieg - In the Hall of the Mountain King-kLp_Hh6DKWc.mp3");
+  
   
   // Text and font setup
   textFont(createFont("Arial", 16));    // sets the font to Arial size 16
@@ -76,8 +77,7 @@ void setup()
   
   
   randomizeTrials();    // randomize the trial order for each participant
-  music = new SoundFile(this, "Grieg - In the Hall of the Mountain King-kLp_Hh6DKWc.mp3");
-  music.jump(80);//music start at 80 seconds
+  music = new SoundFile(this, "audio.mp3");
   music.play();
 }
 
@@ -94,18 +94,37 @@ void draw()
     performance = max(0,min(10-int((averageTime+penalty-563)/(68/2)),10));
   }
   
-  background(255/3*(performance/10.0), 180, 255);      //bad performance -> red; good berformance -> green
+  background(255/3*(performance/10.0), 180, 220);      //bad performance -> red; good berformance -> green
 
   // Print trial count
   fill(0);          // set text fill color to black (white on og)
   text("Trial " + (trialNum + 1) + " of " + trials.size(), 50, 20);    // display what trial the participant is on (the top-left corner)
   
   fill(0);
-  rect(width/2, height/2, width * 3/5, height * 3/5);
+  rect(width/2, height/2, height * 4/5, height * 4/5,10);
 
 
   // Draw targets
   for (int i = 0; i < 16; i++) drawTarget(i);
+  drawArrow();
+}
+
+void drawArrow(){
+  Target target1,target2;
+  if (trialNum < 16*NUM_REPEATS - 1 && trials.get(trialNum) != trials.get(trialNum+1)) {
+    target1 = getTargetBounds(trials.get(trialNum));
+    target2 = getTargetBounds(trials.get(trialNum+1));
+    stroke(255);
+    line(target1.x,target1.y,target2.x,target2.y);
+    fill(255);
+    /*pushMatrix();
+    rotate(atan2(target2.y-target1.y, target2.x-target1.x));
+    translate(target2.x, target2.y);
+    triangle(0, 0, -20, 10, -20, -10);
+    translate(-target2.x, -target2.y);
+    popMatrix(); */
+    noStroke();
+  }
 }
 
 boolean hasEnded() {
@@ -151,7 +170,7 @@ void printResults(float timeTaken, float penalty)
   text("Total time taken: " + timeTaken + " sec", width / 2, height / 2 + 80);
   text("Average time for each target: " + nf((timeTaken)/(float)(hits+misses),0,3) + " sec", width / 2, height / 2 + 100);
   text("Average time for each target + penalty: " + nf(((timeTaken)/(float)(hits+misses) + penalty),0,3) + " sec", width / 2, height / 2 + 140);
-  music.stop();
+  //music.stop();
   saveFrame("results-######.png");    // saves screenshot in current folder
 }
 
@@ -204,20 +223,19 @@ void drawTarget(int i)
   if (trials.get(trialNum) == i) 
   { 
     if (trialNum < 16*NUM_REPEATS - 1 && trials.get(trialNum + 1) == i) {
+      fill(255);
       text("2x",target.x+target.w/2,target.y-target.w/2);
-      
     }
     image(photo, target.x, target.y, target.w, target.w);
   }
-  
-  else if (trialNum < 16*NUM_REPEATS - 1 && trials.get(trialNum+1) == i) {
+  else if (trialNum < 16*NUM_REPEATS - 1 && trials.get(trialNum+1) == i){ 
     fill(0);
+    stroke(127);
     circle(target.x, target.y, target.w);   // draw target
-  }
-  else {
+  }else {
 
-  fill(155);           // fill dark gray
-  circle(target.x, target.y, target.w);   // draw target
+    fill(30);           // fill dark gray
+    circle(target.x, target.y, target.w);   // draw target
   }
   
   
