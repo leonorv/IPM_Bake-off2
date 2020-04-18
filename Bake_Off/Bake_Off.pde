@@ -11,10 +11,12 @@ import java.util.Collections;
 // Target properties
 float PPI, PPCM;
 float TARGET_SIZE;
+float SCALE_FACTOR;
 float TARGET_PADDING, MARGIN, LEFT_PADDING, TOP_PADDING;
 
 // Study properties
 ArrayList<Integer> trials  = new ArrayList<Integer>();    // contains the order of targets that activate in the test
+ArrayList<Boolean> hitList  = new ArrayList<Boolean>();       // target hits
 int trialNum               = 0;                           // the current trial number (indexes into trials array above)
 final int NUM_REPEATS      = 3;                           // sets the number of times each target repeats in the test - FOR THE BAKEOFF NEEDS TO BE 3!
 boolean ended              = false;
@@ -44,6 +46,7 @@ class Target
     x = posx;
     y = posy;
     w = twidth;
+    
   }
 }
 
@@ -54,6 +57,7 @@ void setup()
   //size(900, 900);    // window size in px (use for debugging)
   fullScreen();   // USE THIS DURING THE BAKEOFF!
   
+  SCALE_FACTOR    = 1.0 / displayDensity();            // scale factor for high-density displays
   // The text from the file is loaded into an array. 
   String[] ppi_string = loadStrings("ppi.txt");
   PPI = float(ppi_string[1]);      // set PPI, we assume the ppi value is in the second line of the .txt
@@ -93,7 +97,7 @@ void draw()
   else{
     averageTime = (millis()-startTime)/(float)(1+hits+misses);
     penalty = constrain(((95f-((float)hits*100f/(float)(hits+misses)))*.2f),0,100);
-    performance = max(0,min(10-int((averageTime+penalty*1000-563)/(68/2)),10));
+    performance = max(0,min(10-int((averageTime+(penalty*1000)-563)/(68/2)),10));
   }
   
   background(255/3*(performance/10.0), 180, 220);      //bad performance -> red; good berformance -> green
@@ -117,14 +121,9 @@ void drawArrow(){
     target1 = getTargetBounds(trials.get(trialNum));
     target2 = getTargetBounds(trials.get(trialNum+1));
     stroke(255);
+    strokeWeight(3);
     line(target1.x,target1.y,target2.x,target2.y);
     fill(255);
-    /*pushMatrix();
-    rotate(atan2(target2.y-target1.y, target2.x-target1.x));
-    translate(target2.x, target2.y);
-    triangle(0, 0, -20, 10, -20, -10);
-    translate(-target2.x, -target2.y);
-    popMatrix(); */
     noStroke();
   }
 }
@@ -181,18 +180,26 @@ void printResults(float timeTaken, float penalty)
   text("Fitts Index of Performance", width / 2, height / 2 + 160);
   
   int spacing = 200;
-  for (int i = 1; i < 24; i++) {
-    Target target = getTargetBounds(i);
-    Target prev = getTargetBounds(i - 1);
-    text("Target" + i + ": " + log2(sqrt(((target.x + prev.x)^2 + (target.y + prev.y)^2) / target.w + 1)), 2*width/5, height / 2 + spacing);
+  text("Target 1: --", 2*width/5, height / 2 + spacing);
+  spacing += 30;
+  for (int i = 2; i <= 24; i++) {
+    if (hitList.get(i - 1)) { 
+    Target target = getTargetBounds(i-1);
+    Target prev = getTargetBounds(i - 2);
+    text("Target " + i + ": " + log2(sqrt(((target.x + prev.x)^2 + (target.y + prev.y)^2) / target.w + 1)), 2*width/5, height / 2 + spacing);
+    }
+    else text("Target " + i + ": MISSED", 2*width/5, height / 2 + spacing);
     spacing += 30;
   }
   
   spacing = 200;
-  for (int i = 24; i <= 48; i++) {
-    Target target = getTargetBounds(i);
-    Target prev = getTargetBounds(i - 1);
-    text("Target" + i + ": " + log2(sqrt(((target.x + prev.x)^2 + (target.y + prev.y)^2) / target.w + 1)), 3*width/5, height / 2 + spacing);
+  for (int i = 25; i <= 48; i++) {
+    if (hitList.get(i - 1)) { 
+    Target target = getTargetBounds(i-1);
+    Target prev = getTargetBounds(i - 2);
+    text("Target " + i + ": " + log2(sqrt(((target.x + prev.x)^2 + (target.y + prev.y)^2) / target.w + 1)), 3*width/5, height / 2 + spacing);
+    }
+    else text("Target " + i + ": MISSED", 3*width/5, height / 2 + spacing);
     spacing += 30;
   }
   
@@ -218,11 +225,13 @@ void mouseReleased()
     System.out.println("HIT! " + trialNum + " " + (millis() - startTime));     // success - hit!
     hits++; // increases hits counter 
     lastClick = millis();
+    hitList.add(true);
   }
   else
   {
     System.out.println("MISSED! " + trialNum + " " + (millis() - startTime));  // fail
     misses++;   // increases misses counter
+    hitList.add(false);
   }
 
   trialNum++;   // move on to the next trial; UI will be updated on the next draw() cycle
