@@ -11,6 +11,7 @@ import java.util.Collections;
 // Target properties
 float PPI, PPCM;
 float TARGET_SIZE;
+float SCALE_FACTOR;
 float TARGET_PADDING, MARGIN, LEFT_PADDING, TOP_PADDING;
 
 // Study properties
@@ -54,6 +55,7 @@ void setup()
   //size(900, 900);    // window size in px (use for debugging)
   fullScreen();   // USE THIS DURING THE BAKEOFF!
   
+  SCALE_FACTOR    = 1.0 / displayDensity();            // scale factor for high-density displays
   // The text from the file is loaded into an array. 
   String[] ppi_string = loadStrings("ppi.txt");
   PPI = float(ppi_string[1]);      // set PPI, we assume the ppi value is in the second line of the .txt
@@ -93,7 +95,7 @@ void draw()
   else{
     averageTime = (millis()-startTime)/(float)(1+hits+misses);
     penalty = constrain(((95f-((float)hits*100f/(float)(hits+misses)))*.2f),0,100);
-    performance = max(0,min(10-int((averageTime+penalty-563)/(68/2)),10));
+    performance = max(0,min(10-int((averageTime+(penalty*1000)-563)/(68/2)),10));
   }
   
   background(255/3*(performance/10.0), 180, 220);      //bad performance -> red; good berformance -> green
