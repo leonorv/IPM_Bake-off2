@@ -90,7 +90,10 @@ void setup()
 // Updates UI - this method is constantly being called and drawing targets
 void draw()
 {
-  if(hasEnded()) return; // nothing else to do; study is over
+  if(hasEnded()) {
+    music.stop();
+    return; // nothing else to do; study is over
+  }
   
   if(startTime == 0)
     performance = 10;
@@ -169,27 +172,26 @@ void printResults(float timeTaken, float penalty)
   fill(255);    //set text fill color to white
   text(day() + "/" + month() + "/" + year() + "  " + hour() + ":" + minute() + ":" + second() , 100, 20);   // display time on screen
   
-  text("Finished!", width / 2, height / 2); 
-  text("Hits: " + hits, width / 2, height / 2 + 20);
-  text("Misses: " + misses, width / 2, height / 2 + 40);
-  text("Accuracy: " + (float)hits*100f/(float)(hits+misses) +"%", width / 2, height / 2 + 60);
-  text("Total time taken: " + timeTaken + " sec", width / 2, height / 2 + 80);
-  text("Average time for each target: " + nf((timeTaken)/(float)(hits+misses),0,3) + " sec", width / 2, height / 2 + 100);
-  text("Average time for each target + penalty: " + nf(((timeTaken)/(float)(hits+misses) + penalty),0,3) + " sec", width / 2, height / 2 + 140);
-  //music.stop();
-  text("Fitts Index of Performance", width / 2, height / 2 + 160);
+  text("Finished!", width / 2, height / 10); 
+  text("Hits: " + hits, width / 2, height / 10 + 20);
+  text("Misses: " + misses, width / 2, height / 10 + 40);
+  text("Accuracy: " + (float)hits*100f/(float)(hits+misses) +"%", width / 2, height / 10 + 60);
+  text("Total time taken: " + timeTaken + " sec", width / 2, height / 10 + 80);
+  text("Average time for each target: " + nf((timeTaken)/(float)(hits+misses),0,3) + " sec", width / 2, height / 10 + 100);
+  text("Average time for each target + penalty: " + nf(((timeTaken)/(float)(hits+misses) + penalty),0,3) + " sec", width / 2, height / 10 + 140);
+  text("Fitts Index of Performance", width / 2, height / 10 + 160);
   
   int spacing = 200;
-  text("Target 1: --", 2*width/5, height / 2 + spacing);
-  spacing += 30;
+  text("Target 1: --", 2*width/5, height / 10 + spacing);
+  spacing += 20;
   for (int i = 2; i <= 24; i++) {
     if (hitList.get(i - 1)) { 
     Target target = getTargetBounds(i-1);
     Target prev = getTargetBounds(i - 2);
-    text("Target " + i + ": " + log2(sqrt(((target.x + prev.x)^2 + (target.y + prev.y)^2) / target.w + 1)), 2*width/5, height / 2 + spacing);
+    text("Target " + i + ": " + log2(sqrt(((target.x + prev.x)^2 + (target.y + prev.y)^2) / target.w + 1)), 2*width/5, height / 10 + spacing);
     }
-    else text("Target " + i + ": MISSED", 2*width/5, height / 2 + spacing);
-    spacing += 30;
+    else text("Target " + i + ": MISSED", 2*width/5, height / 10 + spacing);
+    spacing += 20;
   }
   
   spacing = 200;
@@ -197,10 +199,10 @@ void printResults(float timeTaken, float penalty)
     if (hitList.get(i - 1)) { 
     Target target = getTargetBounds(i-1);
     Target prev = getTargetBounds(i - 2);
-    text("Target " + i + ": " + log2(sqrt(((target.x + prev.x)^2 + (target.y + prev.y)^2) / target.w + 1)), 3*width/5, height / 2 + spacing);
+    text("Target " + i + ": " + log2(sqrt(((target.x + prev.x)^2 + (target.y + prev.y)^2) / target.w + 1)), 3*width/5, height / 10 + spacing);
     }
-    else text("Target " + i + ": MISSED", 3*width/5, height / 2 + spacing);
-    spacing += 30;
+    else text("Target " + i + ": MISSED", 3*width/5, height / 10 + spacing);
+    spacing += 20;
   }
   
   saveFrame("results-######.png");    // saves screenshot in current folder
