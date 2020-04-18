@@ -30,6 +30,8 @@ int hits                   = 0;      // number of successful clicks
 int misses                 = 0;      // number of missed clicks
 import processing.sound.SoundFile;
 SoundFile music;
+SoundFile hit_sound;
+SoundFile miss_sound;
 
 float averageTime;
 float penalty;
@@ -224,6 +226,9 @@ void mouseReleased()
   // Check to see if mouse cursor is inside the target bounds
   if(dist(target.x, target.y, mouseX, mouseY) < target.w/2)
   {
+    hit_sound = new SoundFile(this, "hit_sound.mp3");
+    hit_sound.play();
+    hit_sound.jump(0.56);
     System.out.println("HIT! " + trialNum + " " + (millis() - startTime));     // success - hit!
     hits++; // increases hits counter 
     lastClick = millis();
@@ -231,6 +236,9 @@ void mouseReleased()
   }
   else
   {
+    miss_sound = new SoundFile(this, "wrong.mp3");
+    miss_sound.play();
+    miss_sound.jump(0.56);
     System.out.println("MISSED! " + trialNum + " " + (millis() - startTime));  // fail
     misses++;   // increases misses counter
     hitList.add(false);
