@@ -93,7 +93,7 @@ void draw()
   else{
     averageTime = (millis()-startTime)/(float)(1+hits+misses);
     penalty = constrain(((95f-((float)hits*100f/(float)(hits+misses)))*.2f),0,100);
-    performance = max(0,min(10-int((averageTime+penalty-563)/(68/2)),10));
+    performance = max(0,min(10-int((averageTime+penalty*1000-563)/(68/2)),10));
   }
   
   background(255/3*(performance/10.0), 180, 220);      //bad performance -> red; good berformance -> green
