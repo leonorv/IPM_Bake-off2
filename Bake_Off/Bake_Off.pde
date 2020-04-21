@@ -63,7 +63,7 @@ void setup()
   // The text from the file is loaded into an array. 
   String[] ppi_string = loadStrings("ppi.txt");
   PPI = float(ppi_string[1]);      // set PPI, we assume the ppi value is in the second line of the .txt
-  PPCM           = PPI / 2.54;     // do not change this!
+  PPCM           = PPI / 2.54 * SCALE_FACTOR;     // do not change this!
   TARGET_SIZE    = 1.5 * PPCM;     // set the target size in cm; do not change this!
   TARGET_PADDING = 0.1 * PPCM;     // set the padding around the targets in cm; do not change this!
   MARGIN         = 1.5 * PPCM;     // set the margin around the targets in cm; do not change this!
@@ -275,7 +275,7 @@ void drawTarget(int i)
   }
   else if (trialNum < 16*NUM_REPEATS - 1 && trials.get(trialNum+1) == i){ 
     fill(0);
-    stroke(127);
+    stroke(255);
     circle(target.x, target.y, target.w);   // draw target
   }else {
 
